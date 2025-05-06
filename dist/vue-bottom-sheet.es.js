@@ -1,11 +1,11 @@
-import { ref as r, computed as E, watch as V, nextTick as S, onMounted as se, onUnmounted as re, resolveComponent as ue, createElementBlock as f, openBlock as c, createVNode as G, createElementVNode as R, Transition as K, withCtx as $, createCommentVNode as q, normalizeStyle as ie, normalizeClass as F, Fragment as J, renderList as Q, createBlock as I, resolveDynamicComponent as W, mergeProps as X, withModifiers as ce, renderSlot as de } from "vue";
+import { ref as i, computed as V, watch as S, nextTick as H, onMounted as se, onUnmounted as ue, resolveComponent as re, createElementBlock as m, openBlock as v, createVNode as G, createElementVNode as q, Transition as K, withCtx as F, createCommentVNode as z, normalizeStyle as ie, normalizeClass as j, Fragment as J, renderList as Q, createBlock as I, resolveDynamicComponent as W, mergeProps as X, withModifiers as ce, renderSlot as de } from "vue";
 import { useRoute as ve } from "vue-router";
-const fe = (w, g) => {
-  const t = w.__vccOpts || w;
-  for (const [u, P] of g)
-    t[u] = P;
+const fe = (x, k) => {
+  const t = x.__vccOpts || x;
+  for (const [u, M] of k)
+    t[u] = M;
   return t;
-}, me = { class: "lg:hidden" }, he = ["href"], pe = ["href", "onClick"], be = 5, j = "--bottom-sheet-peek-height", ge = {
+}, he = { class: "lg:hidden" }, me = ["href"], pe = ["href", "onClick"], ge = 5, O = "--bottom-sheet-peek-height", be = {
   __name: "BottomSheet",
   props: {
     modelValue: Boolean,
@@ -14,111 +14,121 @@ const fe = (w, g) => {
     quickLinks: { type: Object }
   },
   emits: ["update:modelValue", "state-change", "handle-click"],
-  setup(w, { emit: g }) {
-    const t = w, u = g;
+  setup(x, { emit: k }) {
+    const t = x, u = k;
     ve();
-    const P = r(!1), C = r(""), Z = r(null), ee = r(null), m = r(null), M = r(null), h = r(!1), x = r(!1), z = r(0), Y = r(100), l = r(100), k = r(0), L = r(0), n = r(100), te = E(() => k.value > 0 ? k.value + L.value : 0);
-    V(m, async (e) => {
-      e && (await S(), k.value = e.offsetHeight);
+    const M = i(!1), C = i(""), Z = i(null), ee = i(null), p = i(null), L = i(null), g = i(!1), Y = i(!1), B = i(0), P = i(100), l = i(100), y = i(0), c = i(0), o = i(100), te = V(() => y.value > 0 ? y.value + c.value : 0);
+    S(p, async (e) => {
+      e && (await H(), y.value = e.offsetHeight);
     });
-    const ae = E(() => {
+    const ae = V(() => {
       const e = window.innerHeight;
-      if (!e || k.value <= 0)
+      if (!e || y.value <= 0)
         return -1;
-      const a = k.value / e * 100, s = (L.value || 0) / e * 100;
-      return a + s;
+      const a = y.value / e * 100, r = (c.value || 0) / e * 100;
+      return a + r;
     });
-    V(ae, (e) => {
+    S(ae, (e) => {
       if (e >= 0) {
         const a = Math.max(0, 100 - e);
-        if (Math.abs(a - n.value) > 0.1) {
-          const s = n.value;
-          n.value = a, Math.abs(l.value - s) < 1 && (l.value = n.value), Math.abs(Y.value - s) < 1 && !x.value && (Y.value = n.value);
+        if (Math.abs(a - o.value) > 0.1) {
+          const r = o.value;
+          o.value = a, Math.abs(l.value - r) < 1 && (l.value = o.value), Math.abs(P.value - r) < 1 && !Y.value && (P.value = o.value);
         }
       }
-    }), E(() => [
-      n.value,
+    }), V(() => [
+      o.value,
       t.middleY,
       t.fullY
     ].sort((e, a) => a - e));
-    const le = E(() => ({
+    const le = V(() => ({
       top: `${l.value}vh`,
       position: "fixed",
       left: "0",
       right: "0",
       bottom: "0",
-      transition: h.value ? "none" : "top 0.3s ease-out",
+      transition: g.value ? "none" : "top 0.3s ease-out",
       maxHeight: `calc(100vh - ${t.fullY}vh)`
-    })), y = E(() => n.value < 100 && Math.abs(l.value - n.value) < 1);
-    V(y, async (e) => {
-      if (e && (await S(), M.value)) {
-        const a = M.value.offsetHeight;
-        a > 0 && L.value !== a && (L.value = a);
-      }
-    }, { immediate: !0 }), V([te, y], ([e, a]) => {
-      a && e > 0 ? document.documentElement.style.setProperty(j, `${e}px`) : document.documentElement.style.setProperty(j, "0px");
-    }, { immediate: !0, deep: !0 });
+    })), w = V(() => o.value < 100 && Math.abs(l.value - o.value) < 1);
+    S(w, async (e) => {
+      if (e)
+        if (await H(), L.value) {
+          const a = L.value.offsetHeight;
+          c.value !== a && (c.value = a);
+        } else
+          c.value !== 0 && (c.value = 0);
+      else
+        c.value !== 0 && (c.value = 0);
+    }, { immediate: !0 }), S([te, w], ([e, a]) => {
+      a && e > 0 ? document.documentElement.style.setProperty(O, `${e}px`) : document.documentElement.style.setProperty(O, "0px");
+    }, { immediate: !0 });
     const ne = (e) => {
-      m.value && !m.value.contains(e.target) || (e.preventDefault(), e.stopPropagation(), x.value = !0, h.value = !1, z.value = e.clientY, Y.value = l.value, window.addEventListener("pointermove", B, { passive: !1 }), window.addEventListener("pointerup", _), window.addEventListener("pointerleave", _));
-    }, B = (e) => {
-      if (!x.value) return;
-      const a = e.clientY, s = Math.abs(a - z.value);
-      if (!h.value && s > be && (h.value = !0, document.body.style.cursor = "grabbing", document.body.style.userSelect = "none"), h.value) {
+      p.value && !p.value.contains(e.target) || (e.preventDefault(), e.stopPropagation(), Y.value = !0, g.value = !1, B.value = e.clientY, P.value = l.value, window.addEventListener("pointermove", N, { passive: !1 }), window.addEventListener("pointerup", _), window.addEventListener("pointerleave", _));
+    }, N = (e) => {
+      if (!Y.value) return;
+      const a = e.clientY, r = Math.abs(a - B.value);
+      if (!g.value && r > ge && (g.value = !0, document.body.style.cursor = "grabbing", document.body.style.userSelect = "none"), g.value) {
         e.preventDefault();
-        const i = a - z.value, p = window.innerHeight;
-        if (p === 0) return;
-        const o = i / p * 100;
-        let d = Y.value + o;
-        const b = n.value < 100 ? n.value : t.middleY;
+        const s = a - B.value, h = window.innerHeight;
+        if (h === 0) return;
+        const n = s / h * 100;
+        let d = P.value + n;
+        const b = o.value < 100 ? o.value : t.middleY;
         d = Math.max(t.fullY, Math.min(b, d)), l.value = d;
       }
     }, _ = (e) => {
-      if (!x.value) return;
-      const a = 1, s = Math.abs(Y.value - n.value) < a;
-      if (h.value) {
-        h.value = !1, document.body.style.cursor = "", document.body.style.userSelect = "";
-        const i = l.value, p = Y.value, o = n.value, d = t.middleY, b = t.fullY;
-        let v;
-        const H = i < p;
-        if (s && H)
-          if (i > d - a)
-            v = d;
+      if (!Y.value) return;
+      const a = 1, r = Math.abs(P.value - o.value) < a;
+      if (g.value) {
+        g.value = !1, document.body.style.cursor = "", document.body.style.userSelect = "";
+        const s = l.value, h = P.value, n = o.value, d = t.middleY, b = t.fullY;
+        let f;
+        const T = s < h;
+        if (r && T)
+          if (s > d - a)
+            f = d;
           else {
-            const U = Math.abs(i - d);
-            v = Math.abs(i - b) < U ? b : d;
+            const E = Math.abs(s - d);
+            f = Math.abs(s - b) < E ? b : d;
           }
-        else
-          v = [o, d, b].reduce((D, A) => Math.abs(A - i) < Math.abs(D - i) ? A : D);
-        l.value = v;
-        let N = "peek", T = !1;
-        Math.abs(v - d) < a ? (N = "middle", T = !0) : Math.abs(v - b) < a && (N = "full", T = !0), t.modelValue !== T && u("update:modelValue", T), u("state-change", N, v);
+        else {
+          const E = [d, b];
+          n < 100 && E.push(n), E.length === 0 ? f = h : f = E.reduce(($, A) => Math.abs(A - s) < Math.abs($ - s) ? A : $);
+        }
+        l.value = f;
+        let D = "peek", R = !1;
+        Math.abs(f - d) < a ? (D = "middle", R = !0) : Math.abs(f - b) < a && (D = "full", R = !0), t.modelValue !== R && u("update:modelValue", R), u("state-change", D, f);
       } else
-        s && (u("handle-click"), l.value = t.middleY, t.modelValue || u("update:modelValue", !0), u("state-change", "middle", t.middleY));
-      x.value = !1, window.removeEventListener("pointermove", B), window.removeEventListener("pointerup", _), window.removeEventListener("pointerleave", _);
+        r && (u("handle-click"), l.value = t.middleY, t.modelValue || u("update:modelValue", !0), u("state-change", "middle", t.middleY));
+      Y.value = !1, window.removeEventListener("pointermove", N), window.removeEventListener("pointerup", _), window.removeEventListener("pointerleave", _);
     }, oe = () => {
-      l.value !== n.value && (l.value = n.value, t.modelValue && u("update:modelValue", !1), u("state-change", "peek", n.value));
+      l.value !== o.value && o.value < 100 && (l.value = o.value, t.modelValue && u("update:modelValue", !1), u("state-change", "peek", o.value));
     };
     se(async () => {
-      C.value = navigator.userAgent.toLowerCase(), P.value = /ipad/.test(C.value) && /safari/.test(C.value) && !/chrome/.test(C.value), m.value && (await S(), k.value = m.value.offsetHeight), setTimeout(() => {
-        const e = n.value;
-        t.modelValue ? (Math.abs(l.value - e) < 1 || l.value >= 100) && (l.value = t.middleY, u("state-change", "middle", t.middleY)) : Math.abs(l.value - e) > 0.1 && (l.value = e, u("state-change", "peek", e));
-      }, 0), window.addEventListener("resize", O);
-    }), re(() => {
-      window.removeEventListener("pointermove", B), window.removeEventListener("pointerup", _), window.removeEventListener("pointerleave", _), window.removeEventListener("resize", O), document.body.style.cursor = "", document.body.style.userSelect = "", document.documentElement.style.removeProperty(j);
+      C.value = navigator.userAgent.toLowerCase(), M.value = /ipad/.test(C.value) && /safari/.test(C.value) && !/chrome/.test(C.value), p.value && (await H(), y.value = p.value.offsetHeight), setTimeout(() => {
+        const e = o.value;
+        t.modelValue ? (Math.abs(l.value - e) < 1 || l.value >= 100) && (l.value = t.middleY, u("state-change", "middle", t.middleY)) : e < 100 && Math.abs(l.value - e) > 0.1 ? (l.value = e, u("state-change", "peek", e)) : e >= 100 && l.value < 100 && (l.value = 100, u("state-change", "hidden", 100));
+      }, 0), window.addEventListener("resize", U);
+    }), ue(() => {
+      window.removeEventListener("pointermove", N), window.removeEventListener("pointerup", _), window.removeEventListener("pointerleave", _), window.removeEventListener("resize", U), document.body.style.cursor = "", document.body.style.userSelect = "", document.documentElement.style.removeProperty(O);
     });
-    const O = async () => {
-      m.value && (await S(), k.value = m.value.offsetHeight), y.value && M.value ? (await S(), L.value = M.value.offsetHeight) : y.value;
+    const U = async () => {
+      if (p.value && (await H(), y.value = p.value.offsetHeight), w.value && L.value) {
+        await H();
+        const e = L.value.offsetHeight;
+        c.value !== e && (c.value = e);
+      } else w.value || c.value !== 0 && (c.value = 0);
     };
-    return V(() => t.modelValue, (e) => {
-      if (h.value || x.value) return;
-      const a = l.value, s = 1, i = Math.abs(a - t.middleY) < s || Math.abs(a - t.fullY) < s, p = Math.abs(a - n.value) < s;
-      e && !i ? (l.value = t.middleY, u("state-change", "middle", t.middleY)) : !e && !p && (l.value = n.value, u("state-change", "peek", n.value));
+    return S(() => t.modelValue, (e) => {
+      if (g.value || Y.value) return;
+      const a = l.value, r = 1, s = o.value, h = Math.abs(a - t.middleY) < r || Math.abs(a - t.fullY) < r, n = s < 100 && Math.abs(a - s) < r;
+      e && !h ? (l.value = t.middleY, u("state-change", "middle", t.middleY)) : !e && !n && (s < 100 ? (l.value = s, u("state-change", "peek", s)) : (l.value = 100, u("state-change", "hidden", 100)));
     }), (e, a) => {
-      const s = ue("router-link");
-      return c(), f("div", me, [
+      const r = re("router-link");
+      return v(), m("div", he, [
         G(K, { name: "fade" }, {
-          default: $(() => [
-            y.value ? q("", !0) : (c(), f("div", {
+          default: F(() => [
+            w.value ? z("", !0) : (v(), m("div", {
               key: 0,
               class: "fixed inset-0 z-40 bg-gray-900/60 pointer-events-auto",
               onClick: oe
@@ -126,67 +136,67 @@ const fe = (w, g) => {
           ]),
           _: 1
         }),
-        R("div", {
+        q("div", {
           ref_key: "sheetRef",
           ref: Z,
           class: "fixed bottom-0 left-0 right-0 bg-white rounded-t-xl shadow-2xl flex flex-col pointer-events-auto overflow-hidden touch-pan-y z-50",
           style: ie(le.value)
         }, [
-          R("div", {
+          q("div", {
             ref_key: "handleRef",
-            ref: m,
+            ref: p,
             class: "py-3 flex justify-center items-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0",
             onPointerdown: ne
           }, a[0] || (a[0] = [
-            R("div", { class: "w-10 h-1.5 bg-gray-300 rounded-full pointer-events-none" }, null, -1)
+            q("div", { class: "w-10 h-1.5 bg-gray-300 rounded-full pointer-events-none" }, null, -1)
           ]), 544),
-          y.value ? (c(), f("div", {
+          w.value ? (v(), m("div", {
             key: 0,
             ref_key: "quickLinksRef",
-            ref: M,
-            class: F(["px-4", "pt-3", t.quickLinks ? "" : " p-12 ", P.value && t.quickLinks ? " pb-24 border-t border-gray-200 " : "", !P.value && t.quickLinks ? " pb-14 border-t border-gray-200 " : ""])
+            ref: L,
+            class: j(["px-4", "pt-3", t.quickLinks ? "" : " p-12 ", M.value && t.quickLinks ? " pb-24 border-t border-gray-200 " : "", !M.value && t.quickLinks ? " pb-14 border-t border-gray-200 " : ""])
           }, [
-            (c(!0), f(J, null, Q(t.quickLinks, (i, p) => (c(), f("div", {
-              key: `mobile-sheet-section-${p}`,
+            (v(!0), m(J, null, Q(t.quickLinks, (s, h) => (v(), m("div", {
+              key: `mobile-sheet-section-${h}`,
               class: "flex justify-around"
             }, [
-              (c(!0), f(J, null, Q(i.items, (o, d) => (c(), f("div", null, [
-                o.href ? (c(), f("a", {
+              (v(!0), m(J, null, Q(s.items, (n, d) => (v(), m("div", { key: d }, [
+                n.href ? (v(), m("a", {
                   key: 0,
-                  href: o.href,
-                  class: F([o.current ? "bg-gray-100/60 text-urbis-blue" : "text-gray-700 hover:bg-gray-50 hover:text-urbis-blue", "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"])
+                  href: n.href,
+                  class: j([n.current ? "bg-gray-100/60 text-urbis-blue" : "text-gray-700 hover:bg-gray-50 hover:text-urbis-blue", "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"])
                 }, [
-                  (c(), I(W(o.icon), X({ ref_for: !0 }, o.iconProps, {
-                    class: ["size-6 shrink-0", o.iconProps ? "" : o.current ? "text-urbis-blue" : "text-gray-400 group-hover:text-urbis-blue"],
+                  (v(), I(W(n.icon), X({ ref_for: !0 }, n.iconProps, {
+                    class: ["size-6 shrink-0", n.iconProps ? "" : n.current ? "text-urbis-blue" : "text-gray-400 group-hover:text-urbis-blue"],
                     "aria-hidden": "true"
                   }), null, 16, ["class"]))
-                ], 10, he)) : o.to ? (c(), I(s, {
+                ], 10, me)) : n.to ? (v(), I(r, {
                   key: 1,
-                  to: o.to,
+                  to: n.to,
                   custom: ""
                 }, {
-                  default: $(({ href: b, navigate: v, isActive: H }) => [
-                    R("a", {
+                  default: F(({ href: b, navigate: f, isActive: T }) => [
+                    q("a", {
                       href: b,
                       onClick: ce(() => {
-                        v();
+                        f();
                       }, ["prevent"]),
-                      class: F([H ? "bg-gray-100/60 text-urbis-blue" : "text-gray-700 hover:bg-gray-50 hover:text-urbis-blue", "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"])
+                      class: j([T ? "bg-gray-100/60 text-urbis-blue" : "text-gray-700 hover:bg-gray-50 hover:text-urbis-blue", "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold"])
                     }, [
-                      (c(), I(W(o.icon), X({ ref_for: !0 }, o.iconProps, {
-                        class: ["size-6 shrink-0", o.iconProps ? "" : H ? "text-urbis-blue" : "text-gray-400 group-hover:text-urbis-blue"],
+                      (v(), I(W(n.icon), X({ ref_for: !0 }, n.iconProps, {
+                        class: ["size-6 shrink-0", n.iconProps ? "" : T ? "text-urbis-blue" : "text-gray-400 group-hover:text-urbis-blue"],
                         "aria-hidden": "true"
                       }), null, 16, ["class"]))
                     ], 10, pe)
                   ]),
                   _: 2
-                }, 1032, ["to"])) : q("", !0)
-              ]))), 256))
+                }, 1032, ["to"])) : z("", !0)
+              ]))), 128))
             ]))), 128))
-          ], 2)) : q("", !0),
+          ], 2)) : z("", !0),
           G(K, { name: "fade" }, {
-            default: $(() => [
-              y.value ? q("", !0) : (c(), f("div", {
+            default: F(() => [
+              w.value ? z("", !0) : (v(), m("div", {
                 key: 0,
                 ref_key: "contentRef",
                 ref: ee,
@@ -201,10 +211,10 @@ const fe = (w, g) => {
       ]);
     };
   }
-}, ke = /* @__PURE__ */ fe(ge, [["__scopeId", "data-v-628d2724"]]), xe = {
-  install: (w, g) => {
-    const t = (g == null ? void 0 : g.componentName) || "BottomSheet";
-    w.component(t, ke);
+}, ke = /* @__PURE__ */ fe(be, [["__scopeId", "data-v-cea64601"]]), xe = {
+  install: (x, k) => {
+    const t = (k == null ? void 0 : k.componentName) || "BottomSheet";
+    x.component(t, ke);
   }
 };
 export {
