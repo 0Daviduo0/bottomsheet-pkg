@@ -1,0 +1,20 @@
+{
+  "name": "bottomsheet-pkg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.3",
+    "vite": "^6.3.5"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.1"
+  }
+}
