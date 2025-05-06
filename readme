@@ -1,0 +1,216 @@
+# Vue Bottom Sheet Component ([@tuo-scope/vue-bottom-sheet])
+
+Un componente Vue 3 altamente configurabile per creare "bottom sheet" (pannelli a comparsa dal basso) interattivi e trascinabili, comunemente usati nelle interfacce mobile. Supporta stati di snap (peek, middle, full), gestione del trascinamento, e l'inclusione di link rapidi nello stato "peek".
+
+Questo componente è progettato per integrarsi in progetti che utilizzano **Tailwind CSS**.
+
+## Caratteristiche
+
+* **Tre stati di snap:** Completamente chiuso (peek), parzialmente aperto (middle), e completamente aperto (full).
+* **Altezza Peek Dinamica:** L'altezza dello stato "peek" si adatta automaticamente per mostrare l'handle e, opzionalmente, una sezione di "Quick Links".
+* **Interazione Intuitiva:** Supporta il trascinamento per cambiare stato e il click sull'handle o sull'overlay.
+* **Sincronizzazione v-model:** Controlla lo stato aperto/chiuso del pannello.
+* **Quick Links:** Mostra una sezione di link rapidi personalizzabili quando il pannello è nello stato "peek".
+* **Eventi Dettagliati:** Emette eventi per cambiamenti di stato e interazioni.
+* **Slot per Contenuto:** Permette di inserire contenuto personalizzato nel corpo del pannello.
+* **Design Responsivo:** Nasconde il componente su schermi grandi (`lg:` e superiori) per impostazione predefinita (tramite classi Tailwind).
+
+## Prerequisiti
+
+* Vue 3.x
+* Vue Router 4.x (utilizzato internamente per `useRoute` e per i `router-link` nei quick links)
+* **Tailwind CSS:** Il componente utilizza classi di utilità Tailwind per lo stile. Assicurati che Tailwind CSS sia installato e configurato nel tuo progetto.
+
+## Installazione
+
+Puoi installare il pacchetto usando npm o yarn:
+
+```bash
+npm install [@tuo-scope/vue-bottom-sheet]
+# oppure
+yarn add [@tuo-scope/vue-bottom-sheet]
+```
+
+## Utilizzo
+
+Puoi registrare il componente globalmente come plugin Vue o importarlo direttamente nei tuoi componenti.
+
+### 1. Registrazione Globale (Plugin)
+
+Nel tuo file `main.js` (o `main.ts`):
+
+```javascript
+import { createApp } from 'vue';
+import App from './App.vue';
+import BottomSheetPlugin from '[@tuo-scope/vue-bottom-sheet]'; // O il nome del tuo pacchetto
+// Se il tuo pacchetto esporta anche CSS separato (non in questo caso specifico,
+// ma per altri pacchetti potrebbe essere necessario):
+// import '[@tuo-scope/vue-bottom-sheet]/dist/style.css';
+
+const app = createApp(App);
+
+app.use(BottomSheetPlugin);
+// Puoi anche passare opzioni, ad esempio per un nome componente personalizzato:
+// app.use(BottomSheetPlugin, { componentName: 'MyCustomSheet' });
+
+app.mount('#app');
+```
+
+Ora puoi usare `<BottomSheet>` (o `<MyCustomSheet>`) in qualsiasi template del tuo progetto.
+
+### 2. Importazione Diretta
+
+Puoi importare il componente `BottomSheet` direttamente dove ti serve:
+
+```vue
+<script setup>
+import { ref } from 'vue';
+import { BottomSheet } from '[@tuo-scope/vue-bottom-sheet]'; // O il nome del tuo pacchetto
+// Se il tuo pacchetto esporta anche CSS separato:
+// import '[@tuo-scope/vue-bottom-sheet]/dist/style.css';
+
+const isSheetOpen = ref(false);
+const myQuickLinks = ref({
+  section1: {
+    items: [
+      { name: 'Home', to: { name: 'home' }, icon: 'HomeIconComponent', current: true },
+      { name: 'External', href: 'https://example.com', icon: 'LinkIconComponent' },
+    ]
+  }
+});
+
+const handleSheetStateChange = (newState, position) => {
+  console.log(`Sheet state changed to: ${newState} at ${position}vh`);
+};
+</script>
+
+<template>
+  <div>
+    <button @click="isSheetOpen = !isSheetOpen">
+      {{ isSheetOpen ? 'Chiudi Sheet' : 'Apri Sheet' }}
+    </button>
+
+    <BottomSheet
+      v-model="isSheetOpen"
+      :middle-y="40"
+      :full-y="10"
+      :quick-links="myQuickLinks"
+      @state-change="handleSheetStateChange"
+      @handle-click="() => console.log('Handle cliccato!')"
+    >
+      <div class="p-4">
+        <h2>Contenuto del Bottom Sheet</h2>
+        <p>Questo è il contenuto che appare quando il pannello è aperto (middle o full).</p>
+        <p>Puoi mettere qui qualsiasi markup Vue.</p>
+        <div style="height: 500px; background: #eee; margin-top: 20px; padding: 10px;">
+          Contenuto scrollabile...
+        </div>
+      </div>
+    </BottomSheet>
+  </div>
+</template>
+```
+
+**Nota sugli Icon Component:**
+Nei `quickLinks`, la proprietà `icon` si aspetta un componente Vue importato e registrato (o una stringa che Vue può risolvere in un componente globale). Assicurati che questi componenti icona siano disponibili nel contesto del tuo progetto. Se usi librerie come Heroicons, dovrai importarle.
+
+Esempio con Heroicons (ipotetico `HomeIconComponent`):
+```javascript
+// Potrebbe essere nel tuo <script setup> o importato globalmente
+import { HomeIcon as HomeIconComponent } from '@heroicons/vue/24/outline';
+```
+
+## API
+
+### Props
+
+| Prop         | Tipo    | Default | Descrizione                                                                                                                                                              |
+| :----------- | :------ | :------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `modelValue` | Boolean | `false` | Controlla lo stato aperto (true = `middleY` o `fullY`) o chiuso (false = `peekTranslateY`) del pannello. Usato con `v-model`.                                                 |
+| `middleY`    | Number  | `50`    | La posizione verticale (in % `vh` dalla cima dello schermo) per lo stato "middle". Un valore più basso significa più in alto.                                                |
+| `fullY`      | Number  | `5`     | La posizione verticale (in % `vh` dalla cima dello schermo) per lo stato "full". Un valore più basso significa più in alto.                                                  |
+| `quickLinks` | Object  | `null`  | Un oggetto che definisce i link da mostrare nello stato "peek". Vedi la struttura dell'oggetto qui sotto. Se `null` o vuoto, la sezione quick links non viene renderizzata. |
+
+#### Struttura dell'Oggetto `quickLinks`
+
+L'oggetto `quickLinks` è strutturato per sezioni, ognuna contenente item.
+
+```javascript
+{
+  // Chiave della sezione (es. 'section1', 'navigation', etc.)
+  "uniqueSectionKey": {
+    "items": [
+      {
+        // "name": "Label (non usato nel template attuale, ma utile per debug)",
+        "href": "https://external.url", // Per link esterni <a href="...">
+        "icon": YourIconComponent, // Componente Vue per l'icona
+        "iconProps": { class: "custom-icon-class" }, // Props opzionali da passare al componente icona
+        "current": false // Flag per stile attivo (se applicabile dal tuo CSS e dal componente icona)
+      },
+      {
+        // "name": "Internal Page",
+        "to": { name: "routeName" }, // o "/path", per vue-router <router-link>
+        "icon": AnotherIconComponent,
+        // "iconProps": { ... },
+        // "current": true // Gestito automaticamente da <router-link> se non specificato qui
+      }
+      // ... altri item
+    ]
+  }
+  // ... altre sezioni (nel template attuale, più sezioni vengono renderizzate una dopo l'altra in flex justify-around)
+}
+```
+
+### Eventi
+
+| Evento              | Payload                                 | Descrizione                                                                                                                                                             |
+| :------------------ | :-------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `update:modelValue` | `Boolean (isOpen)`                      | Emesso quando lo stato del pannello (aperto/chiuso) cambia a seguito di interazione utente, per supportare `v-model`.                                                      |
+| `state-change`      | `String (newStateName), Number (newY)`  | Emesso quando il pannello transita a un nuovo stato (`peek`, `middle`, `full`). Il payload include il nome del nuovo stato e la sua posizione `translateY` in `vh`.         |
+| `handle-click`      | `void`                                  | Emesso quando l'handle viene cliccato (non trascinato). Tipicamente, questo apre il pannello allo stato `middleY` se era in stato `peek`.                               |
+
+### Slot
+
+| Nome    | Descrizione                                                                                                                                         |
+| :------ | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
+| default | Il contenuto principale del bottom sheet, visualizzato quando il pannello è negli stati `middle` o `full`. Questo slot riceve lo spazio rimanente. |
+
+## Dipendenza da Tailwind CSS
+
+Questo componente **richiede che Tailwind CSS sia installato e configurato nel progetto che lo utilizza.** Le classi di utilità di Tailwind (`fixed`, `bg-white`, `rounded-t-xl`, `flex`, `lg:hidden`, ecc.) sono usate direttamente nel template del componente. Senza Tailwind, il componente non avrà lo stile corretto.
+
+Assicurati che il `content` path nel tuo `tailwind.config.js` includa i file del componente se lo stai importando dai `node_modules` (questo è particolarmente rilevante se le classi Tailwind non vengono rilevate correttamente):
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  content: [
+    "./index.html",
+    "./src/**/*.{vue,js,ts,jsx,tsx}",
+    "./node_modules/[@tuo-scope]/vue-bottom-sheet/dist/*.{js,vue}", // Assicurati che il percorso sia corretto!
+    // o più genericamente se hai altri pacchetti con classi Tailwind:
+    // "./node_modules/**/*.vue",
+    // "./node_modules/**/*.js",
+  ],
+  // ... resto della tua configurazione Tailwind
+};
+```
+
+## Peer Dependencies
+
+Questo pacchetto elenca `vue` (>=3.2.0) e `vue-router` (>=4.0.0) come `peerDependencies`. Ciò significa che sei responsabile di installare queste dipendenze nel tuo progetto.
+
+```bash
+npm install vue@^3.2.0 vue-router@^4.0.0
+# oppure
+yarn add vue@^3.2.0 vue-router@^4.0.0
+```
+
+## Contribuire
+
+I contributi sono benvenuti! Si prega di aprire una issue o una pull request nel repository GitHub.
+(Aggiungi link al tuo repository se applicabile)
+
+## Licenza
+
+[MIT](LICENSE) (Crea un file LICENSE con la licenza MIT, o quella che preferisci)
