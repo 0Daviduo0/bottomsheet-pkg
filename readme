@@ -1,4 +1,4 @@
-# Vue Bottom Sheet Component ([@tuo-scope/vue-bottom-sheet])
+# Vue Bottom Sheet Component ([@daviduo/vue-bottom-sheet])
 
 Un componente Vue 3 altamente configurabile per creare "bottom sheet" (pannelli a comparsa dal basso) interattivi e trascinabili, comunemente usati nelle interfacce mobile. Supporta stati di snap (peek, middle, full), gestione del trascinamento, e l'inclusione di link rapidi nello stato "peek".
 
@@ -26,9 +26,9 @@ Questo componente è progettato per integrarsi in progetti che utilizzano **Tail
 Puoi installare il pacchetto usando npm o yarn:
 
 ```bash
-npm install [@tuo-scope/vue-bottom-sheet]
+npm install @daviduo/vue-bottom-sheet
 # oppure
-yarn add [@tuo-scope/vue-bottom-sheet]
+yarn add @daviduo/vue-bottom-sheet
 ```
 
 ## Utilizzo
@@ -42,10 +42,10 @@ Nel tuo file `main.js` (o `main.ts`):
 ```javascript
 import { createApp } from 'vue';
 import App from './App.vue';
-import BottomSheetPlugin from '[@tuo-scope/vue-bottom-sheet]'; // O il nome del tuo pacchetto
+import BottomSheetPlugin from '@daviduo/vue-bottom-sheet'; // O il nome del tuo pacchetto
 // Se il tuo pacchetto esporta anche CSS separato (non in questo caso specifico,
 // ma per altri pacchetti potrebbe essere necessario):
-// import '[@tuo-scope/vue-bottom-sheet]/dist/style.css';
+// import '@daviduo/vue-bottom-sheet/dist/style.css';
 
 const app = createApp(App);
 
@@ -69,7 +69,7 @@ Quindi, per registrare il plugin globalmente in questi ambienti, dovresti fare c
     ```javascript
     const { createApp } = require('vue'); // Esempio
     const App = require('./App.vue');     // Esempio
-    const BottomSheetPlugin = require('[@tuo-scope/vue-bottom-sheet]').default; // <-- Nota il .default alla fine!
+    const BottomSheetPlugin = require('@daviduo/vue-bottom-sheet').default; // <-- Nota il .default alla fine!
 
     const app = createApp(App);
     app.use(BottomSheetPlugin);
@@ -92,9 +92,9 @@ Puoi importare il componente `BottomSheet` direttamente dove ti serve:
 ```vue
 <script setup>
 import { ref } from 'vue';
-import { BottomSheet } from '[@tuo-scope/vue-bottom-sheet]'; // O il nome del tuo pacchetto
+import { BottomSheet } from '@daviduo/vue-bottom-sheet'; // O il nome del tuo pacchetto
 // Se il tuo pacchetto esporta anche CSS separato:
-// import '[@tuo-scope/vue-bottom-sheet]/dist/style.css';
+// import '@daviduo/vue-bottom-sheet/dist/style.css';
 
 const isSheetOpen = ref(false);
 const myQuickLinks = ref({
@@ -215,7 +215,7 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
-    "./node_modules/[@tuo-scope]/vue-bottom-sheet/dist/*.{js,vue}", // Assicurati che il percorso sia corretto!
+    "./node_modules/@daviduo/vue-bottom-sheet/dist/*.{js,vue}", // Assicurati che il percorso sia corretto!
     // o più genericamente se hai altri pacchetti con classi Tailwind:
     // "./node_modules/**/*.vue",
     // "./node_modules/**/*.js",
