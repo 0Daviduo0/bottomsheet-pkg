@@ -42,10 +42,7 @@ Nel tuo file `main.js` (o `main.ts`):
 ```javascript
 import { createApp } from 'vue';
 import App from './App.vue';
-import BottomSheetPlugin from '@daviduo/vue-bottom-sheet'; // O il nome del tuo pacchetto
-// Se il tuo pacchetto esporta anche CSS separato (non in questo caso specifico,
-// ma per altri pacchetti potrebbe essere necessario):
-// import '@daviduo/vue-bottom-sheet/dist/style.css';
+import BottomSheetPlugin from '@daviduo/vue-bottom-sheet';
 
 const app = createApp(App);
 
@@ -67,21 +64,20 @@ Quindi, per registrare il plugin globalmente in questi ambienti, dovresti fare c
 * **Con `require` (CommonJS):**
 
     ```javascript
-    const { createApp } = require('vue'); // Esempio
-    const App = require('./App.vue');     // Esempio
-    const BottomSheetPlugin = require('@daviduo/vue-bottom-sheet').default; // <-- Nota il .default alla fine!
+    const { createApp } = require('vue'); 
+    const App = require('./App.vue');     
+    const BottomSheetPlugin = require('@daviduo/vue-bottom-sheet').default; // <-- .default
 
     const app = createApp(App);
     app.use(BottomSheetPlugin);
     app.mount('#app');
     ```
 
-* **Con UMD (variabile globale, es. `VueBottomSheet` definito in `vite.config.js`):**
+* **Con UMD:**
 
     ```javascript
-    // Assumendo che il nome globale sia 'VueBottomSheet'
     const app = Vue.createApp(App);
-    app.use(window.VueBottomSheet.default); // <-- Nota il .default
+    app.use(window.VueBottomSheet.default); // <-- .default
     app.mount('#app');
     ```
 
@@ -185,7 +181,7 @@ L'oggetto `quickLinks` è strutturato per sezioni, ognuna contenente item.
       // ... altri item
     ]
   }
-  // ... altre sezioni (nel template attuale, più sezioni vengono renderizzate una dopo l'altra in flex justify-around)
+  // ... altre sezioni
 }
 ```
 
@@ -215,12 +211,10 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
-    "./node_modules/@daviduo/vue-bottom-sheet/dist/*.{js,vue}", // Assicurati che il percorso sia corretto!
-    // o più genericamente se hai altri pacchetti con classi Tailwind:
-    // "./node_modules/**/*.vue",
-    // "./node_modules/**/*.js",
+    "./node_modules/@daviduo/vue-bottom-sheet/dist/*.{js,vue}", 
+    // ...
   ],
-  // ... resto della tua configurazione Tailwind
+  // ...
 };
 ```
 
@@ -237,8 +231,7 @@ yarn add vue@^3.2.0 vue-router@^4.0.0
 ## Contribuire
 
 I contributi sono benvenuti! Si prega di aprire una issue o una pull request nel repository GitHub.
-(Aggiungi link al tuo repository se applicabile)
 
 ## Licenza
 
-[MIT](LICENSE) (Crea un file LICENSE con la licenza MIT, o quella che preferisci)
+[MIT](LICENSE)
