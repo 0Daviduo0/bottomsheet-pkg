@@ -1,6 +1,6 @@
 {
   "name": "@daviduo/vue-bottom-sheet",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Un componente Vue 3 BottomSheet trascinabile e reattivo",
   "type": "module",
   "main": "./dist/vue-bottom-sheet.umd.js",
