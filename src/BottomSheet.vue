@@ -34,8 +34,6 @@ const handleHeightPx = ref(0);
 const quickLinksHeightPx = ref(0);
 const peekTranslateY = ref(100);
 const clickThreshold = 5;
-
-// --- INIZIO MODIFICHE PER CSS CUSTOM PROPERTY ---
 const PEEK_HEIGHT_CSS_VAR = '--bottom-sheet-peek-height'; // Nome della variabile CSS
 
 // Calcola l'altezza effettiva in pixel dell'area di peek
@@ -46,8 +44,7 @@ const actualPeekHeightPx = computed(() => {
     return handleHeightPx.value + quickLinksHeightPx.value;
   }
   return 0; // Se l'handle non è misurato, l'altezza di peek effettiva per questo scopo è 0.
-});
-// --- FINE MODIFICHE PER CSS CUSTOM PROPERTY ---
+})
 
 // Misura altezza handle
 watch(handleRef, async (newHandleEl) => {
@@ -55,7 +52,7 @@ watch(handleRef, async (newHandleEl) => {
         await nextTick();
         handleHeightPx.value = newHandleEl.offsetHeight;
     }
-}, { immediate: true });
+});
 
 // Calcola altezza combinata in vh
 const combinedPeekHeightVh = computed(() => {
@@ -124,8 +121,6 @@ watch(isPeekState, async (isPeeking) => {
   // La logica per la CSS Custom Property è gestita da un altro watcher dedicato
 }, { immediate: true }); // immediate: true per misurare subito se parte in peek
 
-
-// --- INIZIO MODIFICHE PER CSS CUSTOM PROPERTY ---
 // Watcher dedicato per aggiornare la variabile CSS
 watch([actualPeekHeightPx, isPeekState], ([newPixelHeight, isCurrentlyInPeekState]) => {
   if (isCurrentlyInPeekState && newPixelHeight > 0) {
@@ -134,8 +129,7 @@ watch([actualPeekHeightPx, isPeekState], ([newPixelHeight, isCurrentlyInPeekStat
     // Se non è in stato peek, o l'altezza calcolata è 0, lo spazio riservato dovrebbe essere 0.
     document.documentElement.style.setProperty(PEEK_HEIGHT_CSS_VAR, '0px');
   }
-}, { immediate: true, deep: true }); // deep: true non è strettamente necessario qui con refs primitivi/computed
-// --- FINE MODIFICHE PER CSS CUSTOM PROPERTY ---
+}, { immediate: true, deep: true }); // deep: true non è strettamente necessario qui con refs primitivi/compute
 
 
 // handlePointerDown
@@ -200,7 +194,7 @@ const handlePointerUp = (event) => {
         finalSnapY = (distToFull < distToMiddle) ? fullY : middleY;
       }
     } else {
-      const points = [peekY, middleY, fullY].filter(p => p <= 100); // Assicurati che i punti siano validi
+      const points = [peekY, middleY, fullY]
       finalSnapY = points.reduce((prev, curr) => Math.abs(curr - currentY) < Math.abs(prev - currentY) ? curr : prev );
     }
     currentTranslateY.value = finalSnapY;
@@ -242,9 +236,6 @@ onMounted(async () => {
     await nextTick();
     handleHeightPx.value = handleRef.value.offsetHeight;
   }
-  
-  // La misurazione iniziale di quickLinksRef (se in peek state) avviene grazie a `watch(isPeekState, { immediate: true })`
-  // e l'aggiornamento della CSS var avviene grazie a `watch([actualPeekHeightPx, isPeekState], { immediate: true })`
 
   setTimeout(() => {
        const currentPeekY = peekTranslateY.value;
@@ -272,10 +263,8 @@ onUnmounted(() => {
   window.removeEventListener('resize', updatePeekPosition);
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
-  // --- INIZIO MODIFICHE PER CSS CUSTOM PROPERTY ---
   // Pulisci la variabile CSS quando il componente viene smontato
   document.documentElement.style.removeProperty(PEEK_HEIGHT_CSS_VAR);
-  // --- FINE MODIFICHE PER CSS CUSTOM PROPERTY ---
 });
 
 // updatePeekPosition
