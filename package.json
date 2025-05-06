@@ -1,32 +1,32 @@
 {
-  "name": "@daviduo/vue-bottom-sheet", 
-  "version": "1.0.1", 
+  "name": "@daviduo/vue-bottom-sheet",
+  "version": "1.0.2",
   "description": "Un componente Vue 3 BottomSheet trascinabile e reattivo",
   "type": "module",
   "main": "./dist/vue-bottom-sheet.umd.js",
   "module": "./dist/vue-bottom-sheet.es.js",
   "exports": {
     ".": {
-      "import": "./dist/vue-bottom-sheet.es.js", 
-      "require": "./dist/vue-bottom-sheet.umd.js" 
+      "import": "./dist/vue-bottom-sheet.es.js",
+      "require": "./dist/vue-bottom-sheet.umd.js"
     }
   },
-  "files": [ 
+  "files": [
     "dist"
   ],
   "scripts": {
-    "dev": "vite", 
-    "build": "vite build", 
+    "dev": "vite",
+    "build": "vite build",
     "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
-    "vue": "^3.2.0", 
+    "vue": "^3.2.0",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
-    "vite": "^5.0.0",         
-    "vue": "^3.3.0"          
+    "vite": "^5.0.0",
+    "vue": "^3.3.0"
   },
   "keywords": [
     "vue",
@@ -38,14 +38,14 @@
     "ui",
     "mobile"
   ],
-  "author": "Davide Piroddi davide0400@gmail.com", 
+  "author": "Davide Piroddi davide0400@gmail.com",
   "license": "MIT",
-  "repository": { 
+  "repository": {
     "type": "git",
-    "url": "git+https://github.com/0Daviduo0/bottomsheet-pkg.git" 
+    "url": "git+https://github.com/0Daviduo0/bottomsheet-pkg.git"
   },
-  "bugs": { 
+  "bugs": {
     "url": "https://github.com/0Daviduo0/bottomsheet-pkg/issues"
   },
-  "homepage": "https://github.com/0Daviduo0/bottomsheet-pkg#readme" 
+  "homepage": "https://github.com/0Daviduo0/bottomsheet-pkg#readme"
 }
