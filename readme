@@ -58,6 +58,33 @@ app.mount('#app');
 
 Ora puoi usare `<BottomSheet>` (o `<MyCustomSheet>`) in qualsiasi template del tuo progetto.
 
+**Nota importante per utenti CommonJS/UMD:**
+
+A causa della coesistenza di esportazioni nominate (`BottomSheet`) e di una esportazione default (il plugin stesso) nel pacchetto, quando si utilizza `require()` o si carica il pacchetto tramite un tag `<script>` (UMD), l'oggetto plugin necessario per `app.use()` **deve essere accessibile tramite la proprietà `.default`**.
+
+Quindi, per registrare il plugin globalmente in questi ambienti, dovresti fare così:
+
+* **Con `require` (CommonJS):**
+
+    ```javascript
+    const { createApp } = require('vue'); // Esempio
+    const App = require('./App.vue');     // Esempio
+    const BottomSheetPlugin = require('[@tuo-scope/vue-bottom-sheet]').default; // <-- Nota il .default alla fine!
+
+    const app = createApp(App);
+    app.use(BottomSheetPlugin);
+    app.mount('#app');
+    ```
+
+* **Con UMD (variabile globale, es. `VueBottomSheet` definito in `vite.config.js`):**
+
+    ```javascript
+    // Assumendo che il nome globale sia 'VueBottomSheet'
+    const app = Vue.createApp(App);
+    app.use(window.VueBottomSheet.default); // <-- Nota il .default
+    app.mount('#app');
+    ```
+
 ### 2. Importazione Diretta
 
 Puoi importare il componente `BottomSheet` direttamente dove ti serve:
@@ -115,6 +142,7 @@ const handleSheetStateChange = (newState, position) => {
 Nei `quickLinks`, la proprietà `icon` si aspetta un componente Vue importato e registrato (o una stringa che Vue può risolvere in un componente globale). Assicurati che questi componenti icona siano disponibili nel contesto del tuo progetto. Se usi librerie come Heroicons, dovrai importarle.
 
 Esempio con Heroicons (ipotetico `HomeIconComponent`):
+
 ```javascript
 // Potrebbe essere nel tuo <script setup> o importato globalmente
 import { HomeIcon as HomeIconComponent } from '@heroicons/vue/24/outline';
