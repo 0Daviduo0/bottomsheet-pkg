@@ -10,8 +10,6 @@ const props = defineProps({
   quickLinks: { type: Object },
 });
 
-console.log(props.quickLinks)
-
 // Emits
 const emit = defineEmits(['update:modelValue','state-change', 'handle-click']);
 
@@ -319,7 +317,7 @@ watch(() => props.modelValue, (isOpen) => {
       <div
         v-if="isPeekState"
         ref="quickLinksRef" 
-        :class="['px-4','pt-3','border-t','border-gray-200',{ 'pb-24': isIpadSafari, 'pb-14': !isIpadSafari }]" 
+        :class="['px-4','pt-3', props.quickLinks ? '' : ' p-12 ', isIpadSafari && props.quickLinks ? ' pb-24 border-t border-gray-200 ': '', !isIpadSafari && props.quickLinks ? ' pb-14 border-t border-gray-200 ': '' ]" 
       >
         <div v-for="(section, sectionIndex) in props.quickLinks" :key="`mobile-sheet-section-${sectionIndex}`" class="flex justify-around">
           <div v-for="(item, itemIndex) in section.items" >

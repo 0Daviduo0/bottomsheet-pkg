@@ -1,8 +1,8 @@
-import { ref as r, watch as H, nextTick as L, computed as T, onMounted as ne, onUnmounted as oe, resolveComponent as se, createElementBlock as f, openBlock as c, createVNode as A, createElementVNode as R, Transition as G, withCtx as F, createCommentVNode as z, normalizeStyle as re, normalizeClass as $, Fragment as J, renderList as K, createBlock as j, resolveDynamicComponent as Q, mergeProps as W, withModifiers as ue, renderSlot as ie } from "vue";
+import { ref as r, watch as H, nextTick as L, computed as T, onMounted as ne, onUnmounted as oe, resolveComponent as se, createElementBlock as f, openBlock as c, createVNode as A, createElementVNode as q, Transition as G, withCtx as F, createCommentVNode as R, normalizeStyle as re, normalizeClass as $, Fragment as J, renderList as K, createBlock as j, resolveDynamicComponent as Q, mergeProps as W, withModifiers as ue, renderSlot as ie } from "vue";
 import { useRoute as ce } from "vue-router";
-const de = (k, b) => {
+const de = (k, g) => {
   const t = k.__vccOpts || k;
-  for (const [u, Y] of b)
+  for (const [u, Y] of g)
     t[u] = Y;
   return t;
 }, ve = { class: "lg:hidden" }, fe = ["href"], he = ["href", "onClick"], me = 5, pe = {
@@ -14,12 +14,10 @@ const de = (k, b) => {
     quickLinks: { type: Object }
   },
   emits: ["update:modelValue", "state-change", "handle-click"],
-  setup(k, { emit: b }) {
-    const t = k;
-    console.log(t.quickLinks);
-    const u = b;
+  setup(k, { emit: g }) {
+    const t = k, u = g;
     ce();
-    const Y = r(!1), V = r(""), X = r(null), Z = r(null), h = r(null), _ = r(null), m = r(!1), y = r(!1), B = r(0), w = r(100), l = r(100), M = r(0), C = r(0), n = r(100);
+    const Y = r(!1), V = r(""), X = r(null), Z = r(null), h = r(null), _ = r(null), m = r(!1), y = r(!1), z = r(0), w = r(100), l = r(100), M = r(0), C = r(0), n = r(100);
     H(h, async (e) => {
       e && (await L(), M.value = e.offsetHeight);
     }, { immediate: !0 });
@@ -59,25 +57,25 @@ const de = (k, b) => {
       }
     });
     const ae = (e) => {
-      h.value && !h.value.contains(e.target) || (e.preventDefault(), e.stopPropagation(), y.value = !0, m.value = !1, B.value = e.clientY, w.value = l.value, window.addEventListener("pointermove", N, { passive: !1 }), window.addEventListener("pointerup", x), window.addEventListener("pointerleave", x));
-    }, N = (e) => {
+      h.value && !h.value.contains(e.target) || (e.preventDefault(), e.stopPropagation(), y.value = !0, m.value = !1, z.value = e.clientY, w.value = l.value, window.addEventListener("pointermove", B, { passive: !1 }), window.addEventListener("pointerup", x), window.addEventListener("pointerleave", x));
+    }, B = (e) => {
       if (!y.value) return;
-      const a = e.clientY, s = Math.abs(a - B.value);
+      const a = e.clientY, s = Math.abs(a - z.value);
       if (!m.value && s > me && (m.value = !0, document.body.style.cursor = "grabbing", document.body.style.userSelect = "none"), m.value) {
         e.preventDefault();
-        const i = a - B.value, p = window.innerHeight;
+        const i = a - z.value, p = window.innerHeight;
         if (p === 0) return;
         const o = i / p * 100;
         let d = w.value + o;
-        const g = n.value < 100 ? n.value : t.middleY;
-        d = Math.max(t.fullY, Math.min(g, d)), l.value = d;
+        const b = n.value < 100 ? n.value : t.middleY;
+        d = Math.max(t.fullY, Math.min(b, d)), l.value = d;
       }
     }, x = (e) => {
       if (!y.value) return;
       const a = 1, s = Math.abs(w.value - n.value) < a;
       if (m.value) {
         m.value = !1, document.body.style.cursor = "", document.body.style.userSelect = "";
-        const i = l.value, p = w.value, o = n.value, d = t.middleY, g = t.fullY;
+        const i = l.value, p = w.value, o = n.value, d = t.middleY, b = t.fullY;
         let v;
         const S = i < p;
         if (s && S)
@@ -85,16 +83,16 @@ const de = (k, b) => {
             v = d;
           else {
             const O = Math.abs(i - d);
-            v = Math.abs(i - g) < O ? g : d;
+            v = Math.abs(i - b) < O ? b : d;
           }
         else
-          v = [o, d, g].reduce((D, U) => Math.abs(U - i) < Math.abs(D - i) ? U : D);
+          v = [o, d, b].reduce((D, U) => Math.abs(U - i) < Math.abs(D - i) ? U : D);
         l.value = v;
-        let q = "peek", E = !1;
-        Math.abs(v - d) < a ? (q = "middle", E = !0) : Math.abs(v - g) < a && (q = "full", E = !0), t.modelValue !== E && u("update:modelValue", E), u("state-change", q, v);
+        let N = "peek", E = !1;
+        Math.abs(v - d) < a ? (N = "middle", E = !0) : Math.abs(v - b) < a && (N = "full", E = !0), t.modelValue !== E && u("update:modelValue", E), u("state-change", N, v);
       } else
         s && (u("handle-click"), l.value = t.middleY, t.modelValue || u("update:modelValue", !0), u("state-change", "middle", t.middleY));
-      y.value = !1, window.removeEventListener("pointermove", N), window.removeEventListener("pointerup", x), window.removeEventListener("pointerleave", x);
+      y.value = !1, window.removeEventListener("pointermove", B), window.removeEventListener("pointerup", x), window.removeEventListener("pointerleave", x);
     }, le = () => {
       l.value !== n.value && (l.value = n.value, t.modelValue && u("update:modelValue", !1), u("state-change", "peek", n.value));
     };
@@ -104,7 +102,7 @@ const de = (k, b) => {
         t.modelValue ? (Math.abs(l.value - e) < 1 || l.value >= 100) && (l.value = t.middleY, u("state-change", "middle", t.middleY)) : Math.abs(l.value - e) > 0.1 && (l.value = e, u("state-change", "peek", e));
       }, 0), window.addEventListener("resize", I);
     }), oe(() => {
-      window.removeEventListener("pointermove", N), window.removeEventListener("pointerup", x), window.removeEventListener("pointerleave", x), window.removeEventListener("resize", I), document.body.style.cursor = "", document.body.style.userSelect = "";
+      window.removeEventListener("pointermove", B), window.removeEventListener("pointerup", x), window.removeEventListener("pointerleave", x), window.removeEventListener("resize", I), document.body.style.cursor = "", document.body.style.userSelect = "";
     });
     const I = async () => {
       h.value && (await L(), M.value = h.value.offsetHeight), P.value && _.value && (await L(), C.value = _.value.offsetHeight);
@@ -118,7 +116,7 @@ const de = (k, b) => {
       return c(), f("div", ve, [
         A(G, { name: "fade" }, {
           default: F(() => [
-            P.value ? z("", !0) : (c(), f("div", {
+            P.value ? R("", !0) : (c(), f("div", {
               key: 0,
               class: "fixed inset-0 z-40 bg-gray-900/60 pointer-events-auto",
               onClick: le
@@ -126,25 +124,25 @@ const de = (k, b) => {
           ]),
           _: 1
         }),
-        R("div", {
+        q("div", {
           ref_key: "sheetRef",
           ref: X,
           class: "fixed bottom-0 left-0 right-0 bg-white rounded-t-xl shadow-2xl flex flex-col pointer-events-auto overflow-hidden touch-pan-y z-50",
           style: re(te.value)
         }, [
-          R("div", {
+          q("div", {
             ref_key: "handleRef",
             ref: h,
             class: "py-3 flex justify-center items-center cursor-grab active:cursor-grabbing touch-none flex-shrink-0",
             onPointerdown: ae
           }, a[0] || (a[0] = [
-            R("div", { class: "w-10 h-1.5 bg-gray-300 rounded-full pointer-events-none" }, null, -1)
+            q("div", { class: "w-10 h-1.5 bg-gray-300 rounded-full pointer-events-none" }, null, -1)
           ]), 544),
           P.value ? (c(), f("div", {
             key: 0,
             ref_key: "quickLinksRef",
             ref: _,
-            class: $(["px-4", "pt-3", "border-t", "border-gray-200", { "pb-24": Y.value, "pb-14": !Y.value }])
+            class: $(["px-4", "pt-3", t.quickLinks ? "" : " p-12 ", Y.value && t.quickLinks ? " pb-24 border-t border-gray-200 " : "", !Y.value && t.quickLinks ? " pb-14 border-t border-gray-200 " : ""])
           }, [
             (c(!0), f(J, null, K(t.quickLinks, (i, p) => (c(), f("div", {
               key: `mobile-sheet-section-${p}`,
@@ -165,9 +163,9 @@ const de = (k, b) => {
                   to: o.to,
                   custom: ""
                 }, {
-                  default: F(({ href: g, navigate: v, isActive: S }) => [
-                    R("a", {
-                      href: g,
+                  default: F(({ href: b, navigate: v, isActive: S }) => [
+                    q("a", {
+                      href: b,
                       onClick: ue(() => {
                         v();
                       }, ["prevent"]),
@@ -180,13 +178,13 @@ const de = (k, b) => {
                     ], 10, he)
                   ]),
                   _: 2
-                }, 1032, ["to"])) : z("", !0)
+                }, 1032, ["to"])) : R("", !0)
               ]))), 256))
             ]))), 128))
-          ], 2)) : z("", !0),
+          ], 2)) : R("", !0),
           A(G, { name: "fade" }, {
             default: F(() => [
-              P.value ? z("", !0) : (c(), f("div", {
+              P.value ? R("", !0) : (c(), f("div", {
                 key: 0,
                 ref_key: "contentRef",
                 ref: Z,
@@ -201,13 +199,13 @@ const de = (k, b) => {
       ]);
     };
   }
-}, ge = /* @__PURE__ */ de(pe, [["__scopeId", "data-v-01978245"]]), ye = {
-  install: (k, b) => {
-    const t = (b == null ? void 0 : b.componentName) || "BottomSheet";
-    k.component(t, ge);
+}, be = /* @__PURE__ */ de(pe, [["__scopeId", "data-v-de3f53df"]]), ye = {
+  install: (k, g) => {
+    const t = (g == null ? void 0 : g.componentName) || "BottomSheet";
+    k.component(t, be);
   }
 };
 export {
-  ge as BottomSheet,
+  be as BottomSheet,
   ye as default
 };
