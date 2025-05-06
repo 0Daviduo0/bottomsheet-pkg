@@ -16,13 +16,13 @@ const emit = defineEmits(['update:modelValue','state-change', 'handle-click']);
 const route = useRoute();
 
 const isIpadSafari = ref(false);
-const userAgent = ref('')
+const userAgent = ref('');
 
 // Refs
 const sheetRef = ref(null);
 const contentRef = ref(null);
 const handleRef = ref(null);
-const quickLinksRef = ref(null); // <-- NUOVO Ref per quick links
+const quickLinksRef = ref(null);
 
 // Stato interno
 const isDragging = ref(false);
@@ -31,11 +31,25 @@ const startClientY = ref(0);
 const initialTranslateY = ref(100);
 const currentTranslateY = ref(100);
 const handleHeightPx = ref(0);
-const quickLinksHeightPx = ref(0); // <-- NUOVO Stato per altezza quick links
-const peekTranslateY = ref(100); // Sarà calcolato in base all'altezza combinata
+const quickLinksHeightPx = ref(0);
+const peekTranslateY = ref(100);
 const clickThreshold = 5;
 
-// Misura altezza handle quando il ref è disponibile
+// --- INIZIO MODIFICHE PER CSS CUSTOM PROPERTY ---
+const PEEK_HEIGHT_CSS_VAR = '--bottom-sheet-peek-height'; // Nome della variabile CSS
+
+// Calcola l'altezza effettiva in pixel dell'area di peek
+const actualPeekHeightPx = computed(() => {
+  // L'handle deve essere misurato per avere un'altezza di peek valida
+  if (handleHeightPx.value > 0) {
+    // quickLinksHeightPx sarà 0 se non ci sono quickLinks o non sono ancora stati misurati, il che è corretto.
+    return handleHeightPx.value + quickLinksHeightPx.value;
+  }
+  return 0; // Se l'handle non è misurato, l'altezza di peek effettiva per questo scopo è 0.
+});
+// --- FINE MODIFICHE PER CSS CUSTOM PROPERTY ---
+
+// Misura altezza handle
 watch(handleRef, async (newHandleEl) => {
     if (newHandleEl) {
         await nextTick();
@@ -43,33 +57,27 @@ watch(handleRef, async (newHandleEl) => {
     }
 }, { immediate: true });
 
-// Calcola l'altezza combinata in vh
+// Calcola altezza combinata in vh
 const combinedPeekHeightVh = computed(() => {
   const windowHeight = window.innerHeight;
-  // Richiede almeno l'altezza dell'handle per calcolare
   if (!windowHeight || handleHeightPx.value <= 0) {
-    return -1; // Non pronto
+    return -1;
   }
   const handleVh = (handleHeightPx.value / windowHeight) * 100;
-  // Usa l'altezza dei quick links se misurata, altrimenti 0
   const quickLinksVh = ((quickLinksHeightPx.value || 0) / windowHeight) * 100;
   return handleVh + quickLinksVh;
 });
 
-// Calcola e aggiorna peekTranslateY basato sull'altezza combinata
+// Calcola e aggiorna peekTranslateY
 watch(combinedPeekHeightVh, (newCombinedHeightVh) => {
-  if (newCombinedHeightVh >= 0) { // Altezza combinata valida (può essere solo handle se quicklinks è 0)
+  if (newCombinedHeightVh >= 0) {
     const newPeekY = Math.max(0, 100 - newCombinedHeightVh);
-    // Aggiorna solo se c'è una differenza significativa
     if (Math.abs(newPeekY - peekTranslateY.value) > 0.1) {
         const oldPeekY = peekTranslateY.value;
         peekTranslateY.value = newPeekY;
-
-        // Se attualmente siamo in stato peek, aggiusta la posizione corrente
         if (Math.abs(currentTranslateY.value - oldPeekY) < 1) {
             currentTranslateY.value = peekTranslateY.value;
         }
-         // Aggiusta anche initialTranslateY se era basato sul vecchio peek
          if (Math.abs(initialTranslateY.value - oldPeekY) < 1 && !isPointerDown.value) {
              initialTranslateY.value = peekTranslateY.value;
          }
@@ -77,14 +85,14 @@ watch(combinedPeekHeightVh, (newCombinedHeightVh) => {
   }
 });
 
-// Punti di snap (dipendono da peekTranslateY aggiornato)
+// Punti di snap
 const snapPoints = computed(() => [
   peekTranslateY.value,
   props.middleY,
   props.fullY
 ].sort((a, b) => b - a));
 
-// Stile sheet (invariato, usa top/bottom:0)
+// Stile sheet
 const sheetStyle = computed(() => ({
   top: `${currentTranslateY.value}vh`,
   position: 'fixed',
@@ -95,26 +103,42 @@ const sheetStyle = computed(() => ({
   maxHeight: `calc(100vh - ${props.fullY}vh)`
 }));
 
-// isPeekState (invariato)
+// isPeekState
 const isPeekState = computed(() => {
   const tolerance = 1;
+  // Considera peek solo se c'è effettivamente un'area di peek (peekTranslateY < 100)
   return peekTranslateY.value < 100 && Math.abs(currentTranslateY.value - peekTranslateY.value) < tolerance;
 });
 
+// Watcher per misurare quickLinksHeightPx e per CSS Custom Property
 watch(isPeekState, async (isPeeking) => {
   if (isPeeking) {
-    await nextTick(); // Attendi aggiornamento DOM
+    await nextTick();
     if (quickLinksRef.value) {
       const newHeight = quickLinksRef.value.offsetHeight;
       if (newHeight > 0 && quickLinksHeightPx.value !== newHeight) {
-         quickLinksHeightPx.value = newHeight; // Aggiorna stato, triggererà il watch su combinedPeekHeightVh
+         quickLinksHeightPx.value = newHeight;
       }
     }
   }
-  // Non resettare quickLinksHeightPx quando scompare, manteniamo l'ultimo valore noto
-});
+  // La logica per la CSS Custom Property è gestita da un altro watcher dedicato
+}, { immediate: true }); // immediate: true per misurare subito se parte in peek
 
-// handlePointerDown (invariato)
+
+// --- INIZIO MODIFICHE PER CSS CUSTOM PROPERTY ---
+// Watcher dedicato per aggiornare la variabile CSS
+watch([actualPeekHeightPx, isPeekState], ([newPixelHeight, isCurrentlyInPeekState]) => {
+  if (isCurrentlyInPeekState && newPixelHeight > 0) {
+    document.documentElement.style.setProperty(PEEK_HEIGHT_CSS_VAR, `${newPixelHeight}px`);
+  } else {
+    // Se non è in stato peek, o l'altezza calcolata è 0, lo spazio riservato dovrebbe essere 0.
+    document.documentElement.style.setProperty(PEEK_HEIGHT_CSS_VAR, '0px');
+  }
+}, { immediate: true, deep: true }); // deep: true non è strettamente necessario qui con refs primitivi/computed
+// --- FINE MODIFICHE PER CSS CUSTOM PROPERTY ---
+
+
+// handlePointerDown
 const handlePointerDown = (event) => {
   if (handleRef.value && !handleRef.value.contains(event.target)) return;
   event.preventDefault();
@@ -128,7 +152,7 @@ const handlePointerDown = (event) => {
   window.addEventListener('pointerleave', handlePointerUp);
 };
 
-// handlePointerMove (invariato)
+// handlePointerMove
 const handlePointerMove = (event) => {
   if (!isPointerDown.value) return;
   const currentClientY = event.clientY;
@@ -145,27 +169,25 @@ const handlePointerMove = (event) => {
     if (windowHeight === 0) return;
     const deltaPercentY = (deltaY / windowHeight) * 100;
     let newTranslateY = initialTranslateY.value + deltaPercentY;
-    const lowerBound = (peekTranslateY.value < 100) ? peekTranslateY.value : props.middleY; // Usa peekTranslateY aggiornato
+    const lowerBound = (peekTranslateY.value < 100) ? peekTranslateY.value : props.middleY;
     newTranslateY = Math.max(props.fullY, Math.min(lowerBound, newTranslateY));
     currentTranslateY.value = newTranslateY;
   }
 };
 
-// handlePointerUp (invariato logicamente, ma userà peekTranslateY aggiornato)
+// handlePointerUp
 const handlePointerUp = (event) => {
   if (!isPointerDown.value) return;
   const tolerance = 1;
-  // Usa peekTranslateY.value che ora tiene conto di entrambe le altezze
   const startedFromPeek = Math.abs(initialTranslateY.value - peekTranslateY.value) < tolerance;
 
   if (isDragging.value) {
-    // --- CASO DRAG ---
     isDragging.value = false;
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
     const currentY = currentTranslateY.value;
     const initialY = initialTranslateY.value;
-    const peekY = peekTranslateY.value; // Valore aggiornato
+    const peekY = peekTranslateY.value;
     const middleY = props.middleY;
     const fullY = props.fullY;
     let finalSnapY;
@@ -178,7 +200,7 @@ const handlePointerUp = (event) => {
         finalSnapY = (distToFull < distToMiddle) ? fullY : middleY;
       }
     } else {
-      const points = [peekY, middleY, fullY];
+      const points = [peekY, middleY, fullY].filter(p => p <= 100); // Assicurati che i punti siano validi
       finalSnapY = points.reduce((prev, curr) => Math.abs(curr - currentY) < Math.abs(prev - currentY) ? curr : prev );
     }
     currentTranslateY.value = finalSnapY;
@@ -189,7 +211,6 @@ const handlePointerUp = (event) => {
     if (props.modelValue !== newModelValue) emit('update:modelValue', newModelValue);
     emit('state-change', finalStateName, finalSnapY);
   } else {
-    // --- CASO CLICK ---
     if (startedFromPeek) {
       emit('handle-click');
       currentTranslateY.value = props.middleY;
@@ -197,14 +218,13 @@ const handlePointerUp = (event) => {
       emit('state-change', 'middle', props.middleY);
     }
   }
-  // --- Cleanup ---
   isPointerDown.value = false;
   window.removeEventListener('pointermove', handlePointerMove);
   window.removeEventListener('pointerup', handlePointerUp);
   window.removeEventListener('pointerleave', handlePointerUp);
 };
 
-// handleOverlayClick (invariato)
+// handleOverlayClick
 const handleOverlayClick = () => {
   if (currentTranslateY.value !== peekTranslateY.value) {
       currentTranslateY.value = peekTranslateY.value;
@@ -213,41 +233,38 @@ const handleOverlayClick = () => {
   }
 };
 
-// onMounted (aggiornato leggermente per chiarezza iniziale)
+// onMounted
 onMounted(async () => {
-
   userAgent.value = navigator.userAgent.toLowerCase();
   isIpadSafari.value = /ipad/.test(userAgent.value) && /safari/.test(userAgent.value) && !/chrome/.test(userAgent.value);
 
-  // Misura handle subito (il watcher si occuperà del resto)
   if (handleRef.value) {
     await nextTick();
     handleHeightPx.value = handleRef.value.offsetHeight;
   }
+  
+  // La misurazione iniziale di quickLinksRef (se in peek state) avviene grazie a `watch(isPeekState, { immediate: true })`
+  // e l'aggiornamento della CSS var avviene grazie a `watch([actualPeekHeightPx, isPeekState], { immediate: true })`
 
-  // Imposta stato iniziale dopo un ciclo per dare tempo ai watcher di stabilizzarsi
   setTimeout(() => {
-       // Usa peekTranslateY.value che dovrebbe essersi aggiornato dai watcher
        const currentPeekY = peekTranslateY.value;
-       if (props.modelValue) { // Se deve iniziare aperto
-           // Se è ancora chiuso o fuori schermo, aprilo
+       if (props.modelValue) {
            if (Math.abs(currentTranslateY.value - currentPeekY) < 1 || currentTranslateY.value >= 100) {
                currentTranslateY.value = props.middleY;
                emit('state-change', 'middle', props.middleY);
            }
-       } else { // Se deve iniziare chiuso
-            // Se non è già precisamente a peek, mettilo a peek
+       } else {
             if (Math.abs(currentTranslateY.value - currentPeekY) > 0.1) {
                  currentTranslateY.value = currentPeekY;
                  emit('state-change', 'peek', currentPeekY);
             }
        }
-   }, 0); // Timeout 0 per eseguire dopo il ciclo corrente
+   }, 0);
 
   window.addEventListener('resize', updatePeekPosition);
 });
 
-// onUnmounted (invariato)
+// onUnmounted
 onUnmounted(() => {
   window.removeEventListener('pointermove', handlePointerMove);
   window.removeEventListener('pointerup', handlePointerUp);
@@ -255,34 +272,34 @@ onUnmounted(() => {
   window.removeEventListener('resize', updatePeekPosition);
   document.body.style.cursor = '';
   document.body.style.userSelect = '';
+  // --- INIZIO MODIFICHE PER CSS CUSTOM PROPERTY ---
+  // Pulisci la variabile CSS quando il componente viene smontato
+  document.documentElement.style.removeProperty(PEEK_HEIGHT_CSS_VAR);
+  // --- FINE MODIFICHE PER CSS CUSTOM PROPERTY ---
 });
 
-// updatePeekPosition (Necessita di ricalcolare ANCHE quick links se visibile)
+// updatePeekPosition
 const updatePeekPosition = async () => {
-    // Ricalcola altezza handle
     if (handleRef.value) {
-       await nextTick(); // Aspetta potenziale reflow da resize
+       await nextTick();
        handleHeightPx.value = handleRef.value.offsetHeight;
-       // Il watcher su combinedPeekHeightVh si occuperà di aggiornare peekTranslateY
     }
-    // Ricalcola altezza quick links SE è visibile
-    if (isPeekState.value && quickLinksRef.value) {
+    if (isPeekState.value && quickLinksRef.value) { // Misura quicklinks solo se è in peek state
         await nextTick();
         quickLinksHeightPx.value = quickLinksRef.value.offsetHeight;
-         // Il watcher su combinedPeekHeightVh si occuperà di aggiornare peekTranslateY
+    } else if (!isPeekState.value) { // Se non è in peek, l'altezza dei quicklinks non contribuisce al calcolo attuale
+        // quickLinksHeightPx.value = 0; // Potrebbe essere utile resettarlo, ma la logica attuale lo mantiene
     }
-    // Nota: Se non era in peek state, l'altezza quick links non viene aggiornata qui,
-    // ma verrà misurata dal watcher 'isPeekState' la prossima volta che diventa true.
 };
 
-// Watcher v-model (invariato)
+// Watcher v-model
 watch(() => props.modelValue, (isOpen) => {
   if (isDragging.value || isPointerDown.value) return;
   const currentY = currentTranslateY.value;
   const tolerance = 1;
-  // Usa peekTranslateY.value aggiornato
   const isCurrentlyOpen = (Math.abs(currentY - props.middleY) < tolerance) || (Math.abs(currentY - props.fullY) < tolerance);
   const isCurrentlyPeek = (Math.abs(currentY - peekTranslateY.value) < tolerance);
+
   if (isOpen && !isCurrentlyOpen) {
       currentTranslateY.value = props.middleY;
       emit('state-change', 'middle', props.middleY);
@@ -316,8 +333,8 @@ watch(() => props.modelValue, (isOpen) => {
       </div>
       <div
         v-if="isPeekState"
-        ref="quickLinksRef" 
-        :class="['px-4','pt-3', props.quickLinks ? '' : ' p-12 ', isIpadSafari && props.quickLinks ? ' pb-24 border-t border-gray-200 ': '', !isIpadSafari && props.quickLinks ? ' pb-14 border-t border-gray-200 ': '' ]" 
+        ref="quickLinksRef"
+        :class="['px-4','pt-3', props.quickLinks ? '' : ' p-12 ', isIpadSafari && props.quickLinks ? ' pb-24 border-t border-gray-200 ': '', !isIpadSafari && props.quickLinks ? ' pb-14 border-t border-gray-200 ': '' ]"
       >
         <div v-for="(section, sectionIndex) in props.quickLinks" :key="`mobile-sheet-section-${sectionIndex}`" class="flex justify-around">
           <div v-for="(item, itemIndex) in section.items" >
